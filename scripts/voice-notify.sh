@@ -5,7 +5,7 @@
 
 START_FILE="/tmp/.claude-response-start"
 NOTIFY_THRESHOLD="${CLAUDE_NOTIFY_THRESHOLD:-15}"
-NOTIFY_VOICE="${CLAUDE_NOTIFY_VOICE:-Samantha}"
+NOTIFY_VOICE="${CLAUDE_NOTIFY_VOICE:-}"
 NOTIFY_RATE="${CLAUDE_NOTIFY_RATE:-200}"
 
 if [ "${1:-done}" = "done" ]; then
@@ -26,11 +26,31 @@ fi
 
 PROJECT=$(basename "$PWD")
 MSG="${PHRASES[$((RANDOM % ${#PHRASES[@]}))]}"
+OS="$(uname)"
 
-# macOS banner notification (requires terminal-notifier)
-if command -v terminal-notifier &>/dev/null; then
-    terminal-notifier -title "Claude Code" -subtitle "$PROJECT" -message "$MSG" -ignoreDnD &
+# --- Banner notification ---
+if [ "$OS" = "Darwin" ]; then
+    if command -v terminal-notifier &>/dev/null; then
+        terminal-notifier -title "Claude Code" -subtitle "$PROJECT" -message "$MSG" -ignoreDnD &
+    else
+        osascript -e "display notification \"$MSG\" with title \"Claude Code\" subtitle \"$PROJECT\"" &
+    fi
+elif [ "$OS" = "Linux" ]; then
+    if command -v notify-send &>/dev/null; then
+        notify-send "Claude Code — $PROJECT" "$MSG" &
+    fi
 fi
 
-# Voice notification (macOS say)
-say -v "$NOTIFY_VOICE" -r "$NOTIFY_RATE" "$PROJECT. $MSG"
+# --- Voice notification ---
+if [ "$OS" = "Darwin" ]; then
+    VOICE="${NOTIFY_VOICE:-Samantha}"
+    say -v "$VOICE" -r "$NOTIFY_RATE" "$PROJECT. $MSG"
+elif [ "$OS" = "Linux" ]; then
+    if command -v spd-say &>/dev/null; then
+        spd-say -w -r "${NOTIFY_RATE:-0}" "$PROJECT. $MSG"
+    elif command -v espeak &>/dev/null; then
+        espeak -s "$NOTIFY_RATE" "$PROJECT. $MSG"
+    elif command -v espeak-ng &>/dev/null; then
+        espeak-ng -s "$NOTIFY_RATE" "$PROJECT. $MSG"
+    fi
+fi

@@ -1,0 +1,32 @@
+{
+  "name": "claude-voice-notify",
+  "version": "1.0.0",
+  "description": "Voice + banner notifications for Claude Code — speaks the project name when done or waiting",
+  "bin": {
+    "claude-voice-notify": "./bin/cli.js"
+  },
+  "keywords": [
+    "claude",
+    "claude-code",
+    "notifications",
+    "voice",
+    "tts",
+    "developer-tools"
+  ],
+  "author": "Andre Fialho",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/afialho/claude-voice-notify.git"
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "files": [
+    "bin/",
+    "scripts/",
+    "lib/",
+    "LICENSE",
+    "README.md"
+  ]
+}
