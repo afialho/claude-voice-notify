@@ -34,6 +34,7 @@ npx claude-voice-notify uninstall
 |---|---|---|
 | **macOS** | `say` (built-in) | `terminal-notifier` (auto-installed via Homebrew) |
 | **Linux** | `spd-say`, `espeak`, or `espeak-ng` | `notify-send` |
+| **Windows** | `System.Speech` (built-in) | Toast notifications (built-in) |
 
 ### Linux dependencies
 
@@ -46,15 +47,19 @@ sudo apt install espeak-ng           # espeak-ng
 sudo apt install libnotify-bin       # notify-send
 ```
 
+### Windows
+
+No extra dependencies — uses built-in PowerShell APIs for both voice and notifications.
+
 ## Configuration
 
-Set environment variables in your shell profile (`~/.zshrc`, `~/.bashrc`):
+Set environment variables in your shell profile (`~/.zshrc`, `~/.bashrc`, or Windows System Environment):
 
 | Variable | Default | Description |
 |---|---|---|
 | `CLAUDE_NOTIFY_THRESHOLD` | `15` | Minimum seconds of work before notifying |
-| `CLAUDE_NOTIFY_VOICE` | `Samantha` (macOS) | Voice name (`say -v '?'` to list) |
-| `CLAUDE_NOTIFY_RATE` | `200` | Speech rate in words per minute |
+| `CLAUDE_NOTIFY_VOICE` | `Samantha` (macOS) | Voice name (`say -v '?'` to list on macOS) |
+| `CLAUDE_NOTIFY_RATE` | `200` (macOS/Linux) / `2` (Windows) | Speech rate |
 
 ### Example
 
@@ -65,14 +70,14 @@ export CLAUDE_NOTIFY_THRESHOLD=30
 
 ## What gets installed
 
-- `~/.claude/scripts/voice-notify.sh` — notification logic
-- `~/.claude/scripts/voice-timestamp.sh` — tracks when Claude starts working
+- `~/.claude/scripts/voice-notify.{sh,ps1}` — notification logic
+- `~/.claude/scripts/voice-timestamp.{sh,ps1}` — tracks when Claude starts working
 - Hooks added to `~/.claude/settings.json`:
   - `PreToolUse` — records start timestamp
   - `Stop` — speaks "done" notification
   - `Notification` — speaks "waiting" notification
 
-No global packages or daemons — just two shell scripts and three hook entries.
+No global packages or daemons — just two scripts and three hook entries.
 
 ## License
 
